@@ -10,7 +10,7 @@ def generate_RSA(bits=2048):
     private_key = new_key.exportKey("PEM")
     return private_key, public_key
 
-
-public_key, private_key = generate_RSA()
-print(public_key)
-print(private_key)
+if __name__ == "__main__":
+    public_key, private_key = generate_RSA()
+    print(public_key)
+    print(private_key)

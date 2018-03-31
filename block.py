@@ -3,6 +3,7 @@ import json
 # from time import time
 import datetime as date
 import os
+from operator import itemgetter
 
 class Block:
 
@@ -65,7 +66,9 @@ def syncBlocks():
                     blockInfo = json.loads(json.load(block_file))
                     blockObj = Block(blockInfo['index'], blockInfo['data'], blockInfo['nonce'], blockInfo['previousHash'], blockInfo['timestamp'])
                     blockObj.block['hash'] = blockInfo['hash']
-                    blocksList.append(blockObj)
+                    blocksList.append(blockObj.block)
+    blocksList = sorted(blocksList, key=itemgetter('index'))
+
     return blocksList
 
 # a = syncBlocks()
