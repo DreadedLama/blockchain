@@ -18,7 +18,7 @@ def mine():
     nonce, hash = mining.mine(hashString , 5)
     demo_block['nonce'] = nonce
     demo_block['hash'] = hash
-    saveBlock(demo_block)
+    saveBlock(demo_block, 5)
 
     return "Mined a new block"
 

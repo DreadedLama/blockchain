@@ -34,21 +34,24 @@ def createGenesisBlock():
     firstBlock.block['hash'] = calculateBlockHash(firstBlock.block)
     return firstBlock
 
-def saveBlock(block):
+def saveBlock(block, minZeros):
+    isFirstBlock = False
     blockchaindata_dir = 'blockchaindata'
     if not os.path.exists(blockchaindata_dir):
         os.mkdir(blockchaindata_dir)
+        isFirstBlock = True
 
-    #saving file
-    indexString = str(block['index']).zfill(5)
-    filename = "{}/{}.json".format(blockchaindata_dir, indexString)
-    with open(filename, 'w') as block_file:
-        # !dump vs dumps
-        block_string = json.dumps(block)
-        json.dump(block_string, block_file)
+    if isFirstBlock or is_valid_block(block, minZeros):
+        #saving file
+        indexString = str(block['index']).zfill(5)
+        filename = "{}/{}.json".format(blockchaindata_dir, indexString)
+        with open(filename, 'w') as block_file:
+            # !dump vs dumps
+            block_string = json.dumps(block)
+            json.dump(block_string, block_file)
 
 # fB = createGenesisBlock()
-# saveBlock(fB.block)  
+# saveBlock(fB.block, 0)
 # with open('blockchaindata/00000.json', 'r') as rf:
 #     data = json.load(rf)
 # # print(data)
@@ -73,3 +76,25 @@ def syncBlocks():
 
 # a = syncBlocks()
 # print(len(a))
+
+
+def is_valid_block(newBlock, minZeros):
+    blocks = syncBlocks()
+    if newBlock['previousHash'] != blocks[-1]['hash']:
+        return False
+
+    if newBlock['hash'] != calculateBlockHash(newBlock): #in case if somone alters hash
+        return False
+    sha256hash = newBlock['hash']
+    noOfZeros = 0
+
+    for i in sha256hash:
+        if i == '0':
+            noOfZeros += 1
+        else:
+            break
+
+    if noOfZeros < minZeros:
+        return False
+
+    return True
