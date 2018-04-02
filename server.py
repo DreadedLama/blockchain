@@ -6,6 +6,7 @@ import json
 import os
 import mining
 import key_generate
+from time import *
 
 app = Flask(__name__)
 
@@ -15,10 +16,13 @@ def mine():
     blocks = syncBlocks()
     demo_block = Block(len(blocks), 'temporary data', None, blocks[-1]['hash'], str(date.datetime.now())).block
     hashString = str(demo_block['index'])+demo_block['data']+str(demo_block['previousHash'])+str(demo_block['timestamp'])
-    nonce, hash = mining.mine(hashString , 5)
+    start_time = time()
+    nonce, hash = mining.mine(hashString , 6)
+    stop_time = time()
+    print(stop_time-start_time)
     demo_block['nonce'] = nonce
     demo_block['hash'] = hash
-    saveBlock(demo_block, 5)
+    saveBlock(demo_block, 6)
 
     return "Mined a new block"
 
@@ -26,11 +30,16 @@ def mine():
 def welcome():
     return "WELCOME!"
 
+@app.route('/blockchain.json', methods=['GET'])
+def blockchain():
+    blockchain = syncBlocks()
+    return {"chain": blockchain}
+
 @app.route('/block/<number>', methods=['GET'])
 def displayBlocks(number):
     blocks = syncBlocks()
     return render_template('block_display.html', block=blocks[int(number)])
-    return jsonify(blocks[int(number)]), 200
+    #return jsonify(blocks[int(number)]), 200
 
 @app.route('/key-generator', methods=['GET'])
 def generateKey():
@@ -41,5 +50,5 @@ def generateKey():
     }
     return render_template('rsa_key_display.html', key=key)
 
-app.run(host='0.0.0.0', port=5000)
+app.run(host='0.0.0.0', port=5000, threaded=True)
 

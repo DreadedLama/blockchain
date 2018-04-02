@@ -46,12 +46,9 @@ def saveBlock(block, minZeros):
         indexString = str(block['index']).zfill(5)
         filename = "{}/{}.json".format(blockchaindata_dir, indexString)
         with open(filename, 'w') as block_file:
-            # !dump vs dumps
-            block_string = json.dumps(block)
-            json.dump(block_string, block_file)
+            json.dump(block, block_file)
 
-# fB = createGenesisBlock()
-# saveBlock(fB.block, 0)
+
 # with open('blockchaindata/00000.json', 'r') as rf:
 #     data = json.load(rf)
 # # print(data)
@@ -66,7 +63,7 @@ def syncBlocks():
             if filename.endswith('.json'):
                 filepath ="{}/{}".format(blockchaindata_dir, filename)
                 with open(filepath, 'r') as block_file:
-                    blockInfo = json.loads(json.load(block_file))
+                    blockInfo =json.load(block_file)
                     blockObj = Block(blockInfo['index'], blockInfo['data'], blockInfo['nonce'], blockInfo['previousHash'], blockInfo['timestamp'])
                     blockObj.block['hash'] = blockInfo['hash']
                     blocksList.append(blockObj.block)
@@ -78,8 +75,10 @@ def syncBlocks():
 # print(len(a))
 
 
-def is_valid_block(newBlock, minZeros):
+def is_valid_block(newBlock, minZeros=5):
     blocks = syncBlocks()
+    if len(blocks) == 0:
+        return True
     if newBlock['previousHash'] != blocks[-1]['hash']:
         return False
 
@@ -98,3 +97,6 @@ def is_valid_block(newBlock, minZeros):
         return False
 
     return True
+
+#fB = createGenesisBlock()
+#saveBlock(fB.block, 0)
