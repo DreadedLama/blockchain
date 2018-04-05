@@ -34,12 +34,10 @@ def createGenesisBlock():
     firstBlock.block['hash'] = calculateBlockHash(firstBlock.block)
     return firstBlock
 
-def saveBlock(block, minZeros):
-    isFirstBlock = False
+def saveBlock(block, minZeros, isFirstBlock=False):
     blockchaindata_dir = 'blockchaindata'
     if not os.path.exists(blockchaindata_dir):
         os.mkdir(blockchaindata_dir)
-        isFirstBlock = True
 
     if isFirstBlock or is_valid_block(block, minZeros):
         #saving file
@@ -47,7 +45,8 @@ def saveBlock(block, minZeros):
         filename = "{}/{}.json".format(blockchaindata_dir, indexString)
         with open(filename, 'w') as block_file:
             json.dump(block, block_file)
-
+        return True
+    return False
 
 # with open('blockchaindata/00000.json', 'r') as rf:
 #     data = json.load(rf)
@@ -99,4 +98,4 @@ def is_valid_block(newBlock, minZeros=5):
     return True
 
 #fB = createGenesisBlock()
-#saveBlock(fB.block, 0)
+#saveBlock(fB.block, 0, isFirstBlock=True)
